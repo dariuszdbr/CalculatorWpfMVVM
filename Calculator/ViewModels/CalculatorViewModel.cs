@@ -16,18 +16,19 @@ namespace Calculator.ViewModels
 
         public string Expression => _model.Expression;
         public string Result => _model.Result;
+
+
         public ICommand InsertDigitCommand => new DelegatingCommand(o => InsertDigit((string)o));
-
-        public void Parenthesis()
-        {
-            throw new NotImplementedException();
-        }
-
         public void InsertDigit(string digit)
         {
             _model.InsertDigit(digit);
             OnPropertyChanged(nameof(Expression));
             OnPropertyChanged(nameof(Result));
+        }
+
+        public void AddBracket()
+        {
+            throw new NotImplementedException();
         }
 
         public ICommand AddCommand => new DelegatingCommand(Add);

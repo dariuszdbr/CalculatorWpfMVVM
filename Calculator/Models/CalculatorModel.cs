@@ -17,7 +17,7 @@ namespace Calculator.Models
         void Clear();
         void Equal();
         void Backspace();
-        void Parenthesis();
+        void AddBracket();
         void InsertDigit(string digit);
     }
 
@@ -26,32 +26,34 @@ namespace Calculator.Models
         public string Expression;
         public string Result;
 
-        private string add = "+";
-        private string substruct = "-";
-        private string multiply = "*";
-        private string divide = "/";
+        private const string AddSign = "+";
+        private const string SubstructSign = "-";
+        private const string MultiplySign = "*";
+        private const string DivideSign = "/";
+        private const string OpenBracketSign = "(";
+        private const string EncloseBracketSign = ")";
 
         private Stack<char> _openParenthesisStack;
         private Stack<char> _closeParenthesisStack;
 
         public void Add()
         {
-            Expression += add;
+            Expression += AddSign;
         }
 
         public void Substruct()
         {
-            Expression += substruct;
+            Expression += SubstructSign;
         }
 
         public void Divide()
         {
-            Expression += divide;
+            Expression += DivideSign;
         }
 
         public void Multiply()
         {
-            Expression += multiply;
+            Expression += MultiplySign;
         }
 
         public void Clear()
@@ -73,7 +75,7 @@ namespace Calculator.Models
             Result = CalculateExpression();
         }
 
-        public void Parenthesis()
+        public void AddBracket()
         {
             
         }
