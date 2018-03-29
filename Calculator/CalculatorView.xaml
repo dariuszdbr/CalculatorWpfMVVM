@@ -1,0 +1,139 @@
+﻿<Window x:Class="Calculator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Calculator"
+        xmlns:viewModels="clr-namespace:Calculator.ViewModels"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="655" Width="300">
+    <Window.DataContext>
+        <viewModels:CalculatorViewModel/>
+    </Window.DataContext>
+    <DockPanel>
+        <Grid>
+            <Grid.Resources>
+                <Style x:Key="Digit" TargetType="{x:Type Button}">
+                    <Setter Property="BorderThickness" Value="0.1"></Setter>
+                    <Setter Property="FontSize" Value="24"></Setter>
+                    <Setter Property="FontFamily" Value="Dubai"></Setter>
+                    <Setter Property="Foreground" Value="DimGray"></Setter>
+                    <Setter Property="Background" Value="Transparent"></Setter>
+                    <Setter Property="Command" Value="{Binding InsertDigitCommand}"/>
+                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Content}"/>
+                </Style>
+                <Style x:Key="Operation" TargetType="{x:Type Button}">
+                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                    <Setter Property="BorderThickness" Value="0.1"></Setter>
+                    <Setter Property="FontSize" Value="24"></Setter>
+                    <Setter Property="FontFamily" Value="MS PGothic"></Setter>
+                    <Setter Property="Foreground" Value="LightSkyBlue"></Setter>
+                    <Setter Property="Background" Value="Transparent"></Setter>
+                </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="6*"/>
+            </Grid.RowDefinitions>
+            <Grid Name="GridTextArea">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBox Name="InputTextBoxResultTextBox" BorderBrush="Transparent" TextAlignment="Center" VerticalAlignment="Center" FontSize="35" Foreground="LightSlateGray" Grid.Row="0" Text="{Binding Expression, Mode=OneWay}" />
+                <TextBox Name="ResultTextBox" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Bottom" FontSize="35"  Foreground="LightSlateGray" Grid.Row="1" Text="{Binding Result, Mode=OneWay}"/>
+            </Grid>
+            <Grid Name="GridBackspaceArea" Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Name="btnBackspace" 
+                        Grid.Column="1" 
+                        Style="{StaticResource Operation}" 
+                        Command="{Binding BackspaceCommand}" 
+                        BorderBrush="Transparent" 
+                        FontSize="15" Content="⌫"/>
+            </Grid>
+            <Grid Name="GridNumericArea" Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button Name="ButtonClean"      
+                        Foreground="OrangeRed" 
+                        Style="{StaticResource Operation}" 
+                        Content="C" 
+                        Command="{Binding ClearCommand}"/>
+                
+                <Button Name="ButtonParenthesis"    
+                        Grid.Row="0" Grid.Column="1" 
+                        Style="{StaticResource Operation}" 
+                        Content="( )" />
+
+                <Button Name="ButtonPercentage" 
+                        Grid.Row="0" Grid.Column="2" 
+                        Style="{StaticResource Operation}" 
+                        Content="%" />
+
+                <Button Name="ButtonDivide"     
+                        Grid.Row="0" Grid.Column="3" 
+                        Style="{StaticResource Operation}"
+                        Command="{Binding DivideCommand}" 
+                        Content="/"/>
+
+                <Button Name="ButtonMultiply" 
+                        Grid.Row="1" Grid.Column="3" 
+                        Style="{StaticResource Operation}" 
+                        Command="{Binding MultiplyCommand}" 
+                        Content="*" />
+
+                <Button Name="ButtonMinus" 
+                        Grid.Row="2" Grid.Column="3" 
+                        Style="{StaticResource Operation}"
+                        Command="{Binding SubstructCommand}" 
+                        Content="-"/>
+
+                <Button Name="ButtonPlus" 
+                        Grid.Row="3" Grid.Column="3" 
+                        Style="{StaticResource Operation}"
+                        Command="{Binding AddCommand}" 
+                        Content="+" />
+
+                <Button Name="ButtonResult" 
+                        Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" 
+                        Style="{StaticResource Operation}" 
+                        Command="{Binding EqualCommand}" 
+                        Foreground="AliceBlue" 
+                        Background="LightSkyBlue"  
+                        Content="=" />
+
+                <Button Name="Button7" Grid.Row="1" Grid.Column="0" Style="{StaticResource Digit}" Content="7" />
+                <Button Name="Button8" Grid.Row="1" Grid.Column="1" Style="{StaticResource Digit}" Content="8" />
+                <Button Name="Button9" Grid.Row="1" Grid.Column="2" Style="{StaticResource Digit}" Content="9" />
+                <Button Name="Button4" Grid.Row="2" Grid.Column="0" Style="{StaticResource Digit}" Content="4" />
+                <Button Name="Button5" Grid.Row="2" Grid.Column="1" Style="{StaticResource Digit}" Content="5" />
+                <Button Name="Button6" Grid.Row="2" Grid.Column="2" Style="{StaticResource Digit}" Content="6" />
+                <Button Name="Button1" Grid.Row="3" Grid.Column="0" Style="{StaticResource Digit}" Content="1" />
+                <Button Name="Button2" Grid.Row="3" Grid.Column="1" Style="{StaticResource Digit}" Content="2" />
+                <Button Name="Button3" Grid.Row="3" Grid.Column="2" Style="{StaticResource Digit}" Content="3" />
+                <Button Name="Button0" Grid.Row="4" Grid.Column="1" Style="{StaticResource Digit}" Content="0" />
+                <Button Name="ButtonComma"  Grid.Row="4" Grid.Column="0" Style="{StaticResource Digit}" CommandParameter="." Content="," />
+                
+            </Grid>
+
+        </Grid>
+    </DockPanel>
+</Window>
+
