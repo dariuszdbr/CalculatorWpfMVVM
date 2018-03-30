@@ -52,8 +52,11 @@ namespace Calculator.Models
         {
             if (string.IsNullOrEmpty(Expression)) return;
 
-            if(Regex.IsMatch(Expression, $@"\{EncloseBracketSign}"))
+            if (Regex.IsMatch(Expression, $@"\{EncloseBracketSign}$"))
                 _encloseBracketStack.Push(EncloseBracketSign);
+            else if (Regex.IsMatch(Expression, $@"\{OpenBracketSign}$"))
+                _encloseBracketStack.Pop();
+
 
             Expression = Expression.Remove(Expression.Length - 1, 1);
             Result = CalculateExpression();
@@ -71,7 +74,7 @@ namespace Calculator.Models
             {
                 Expression += _encloseBracketStack.Pop();
                 Result = CalculateExpression();
-            }   
+            }
         }
 
         public void Insert(string element)
