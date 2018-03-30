@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using org.mariuszgromada.math.mxparser;
 
@@ -10,85 +8,104 @@ namespace Calculator.Models
 {
     public interface IOperations
     {
-        void Add();
-        void Substruct();
-        void Divide();
-        void Multiply();
-        void Clear();
-        void Equal();
-        void Backspace();
-        void AddBracket();
-        void InsertDigit(string digit);
+        void Insert(string digit);
+        void InsertOperation(Operations operation);
+    }
+
+    public enum Operations
+    {
+        Clear,
+        Equal,
+        Backspace,
+        Bracket,
+        Percentage
     }
 
     public class CalculatorModel : IOperations
     {
-        public string Expression;
-        public string Result;
+        public string Expression { get; private set; } = string.Empty;
+        public string Result { get; private set; } = string.Empty;
 
-        private const string AddSign = "+";
-        private const string SubstructSign = "-";
-        private const string MultiplySign = "*";
-        private const string DivideSign = "/";
+
         private const string OpenBracketSign = "(";
         private const string EncloseBracketSign = ")";
 
-        private Stack<char> _openParenthesisStack;
-        private Stack<char> _closeParenthesisStack;
+        private readonly Stack<string> _encloseBracketStack;
 
-        public void Add()
+        public CalculatorModel()
         {
-            Expression += AddSign;
+            _encloseBracketStack = new Stack<string>();
         }
 
-        public void Substruct()
-        {
-            Expression += SubstructSign;
-        }
-
-        public void Divide()
-        {
-            Expression += DivideSign;
-        }
-
-        public void Multiply()
-        {
-            Expression += MultiplySign;
-        }
-
-        public void Clear()
+        private void Clear()
         {
             Expression = string.Empty;
             Result = string.Empty;
         }
 
-        public void Equal()
+        private void Equal()
         {
-            Expression = string.Empty;
+            Expression = Result;
         }
 
-        public void Backspace()
+        private void Backspace()
         {
             if (string.IsNullOrEmpty(Expression)) return;
+
+            if(Regex.IsMatch(Expression, $@"\{EncloseBracketSign}"))
+                _encloseBracketStack.Push(EncloseBracketSign);
 
             Expression = Expression.Remove(Expression.Length - 1, 1);
             Result = CalculateExpression();
         }
 
-        public void AddBracket()
+        private void AddBracket()
         {
-            
+            if (!_encloseBracketStack.Any())
+            {
+                Expression += Regex.IsMatch(Expression.Last().ToString(), @"\d") ? $"*{OpenBracketSign}" : OpenBracketSign;
+                _encloseBracketStack.Push(EncloseBracketSign);
+                Result = string.Empty;
+            }
+            else
+            {
+                Expression += _encloseBracketStack.Pop();
+                Result = CalculateExpression();
+            }   
         }
 
-        public void InsertDigit(string digit)
+        public void Insert(string element)
         {
-            Expression += digit;
+            if (Regex.IsMatch(element, @"[+\-*/%,]"))
+                Expression += string.IsNullOrEmpty(Expression) || Regex.IsMatch(Expression, @"[+\-*/%]$") ? string.Empty : element;
+            else
+                Expression += element;
+
             Result = CalculateExpression();
+        }
+
+        public void InsertOperation(Operations operation)
+        {
+            switch (operation)
+            {
+                case Operations.Backspace:
+                    Backspace();
+                    break;
+                case Operations.Clear:
+                    Clear();
+                    break;
+                case Operations.Bracket:
+                    AddBracket();
+                    break;
+                case Operations.Equal:
+                    Equal();
+                    break;
+            }
         }
 
         string CalculateExpression()
         {
-            if (string.IsNullOrEmpty(Expression) || !Regex.IsMatch(Expression.Last().ToString(), @"\d"))
+            if (string.IsNullOrEmpty(Expression) || !Regex.IsMatch(Expression.Last().ToString(), @"(\d|\))") || _encloseBracketStack.Any())
                 return string.Empty;
 
             Expression expression = new Expression(Expression);

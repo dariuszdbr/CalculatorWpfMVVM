@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Calculator"
         xmlns:viewModels="clr-namespace:Calculator.ViewModels"
+        xmlns:models="clr-namespace:Calculator.Models"
         mc:Ignorable="d"
-        Title="MainWindow" Height="655" Width="300">
+        Title="MainWindow" Height="655" Width="300" ResizeMode="CanMinimize">
     <Window.DataContext>
         <viewModels:CalculatorViewModel/>
     </Window.DataContext>
@@ -19,16 +20,19 @@
                     <Setter Property="FontFamily" Value="Dubai"></Setter>
                     <Setter Property="Foreground" Value="DimGray"></Setter>
                     <Setter Property="Background" Value="Transparent"></Setter>
-                    <Setter Property="Command" Value="{Binding InsertDigitCommand}"/>
+                    <Setter Property="Command" Value="{Binding InsertCommand}"/>
                     <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Content}"/>
                 </Style>
-                <Style x:Key="Operation" TargetType="{x:Type Button}">
+                <Style x:Key="Actions" TargetType="{x:Type Button}">
                     <Setter Property="FontWeight" Value="Bold"></Setter>
                     <Setter Property="BorderThickness" Value="0.1"></Setter>
                     <Setter Property="FontSize" Value="24"></Setter>
                     <Setter Property="FontFamily" Value="MS PGothic"></Setter>
                     <Setter Property="Foreground" Value="LightSkyBlue"></Setter>
                     <Setter Property="Background" Value="Transparent"></Setter>
+                    <Setter Property="Command" Value="{Binding InsertCommand}"/>
+                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Content}"/>
+
                 </Style>
             </Grid.Resources>
             <Grid.RowDefinitions>
@@ -41,8 +45,12 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBox Name="InputTextBox" BorderBrush="Transparent" TextAlignment="Center" VerticalAlignment="Center" FontSize="35" Foreground="LightSlateGray" Grid.Row="0" Text="{Binding Expression, Mode=OneWay}" />
-                <TextBox Name="ResultTextBox" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Bottom" FontSize="35"  Foreground="LightSlateGray" Grid.Row="1" Text="{Binding Result, Mode=OneWay}"/>
+                <Viewbox MaxHeight="100" Grid.Row="0" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <TextBox Name="InputTextBox"  BorderBrush="Transparent" TextAlignment="Center"   FontSize="35" Foreground="LightSlateGray" Text="{Binding Expression, Mode=OneWay}" TextWrapping="WrapWithOverflow" />
+                </Viewbox>
+                <Viewbox MaxHeight="50" Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <TextBox Name="ResultTextBox" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right" BorderBrush="Transparent" FontSize="35"  Foreground="LightSlateGray" Text="{Binding Result, Mode=OneWay}" TextWrapping="WrapWithOverflow"/>
+                </Viewbox>
             </Grid>
             <Grid Name="GridBackspaceArea" Row="1">
                 <Grid.ColumnDefinitions>
@@ -51,9 +59,9 @@
                 </Grid.ColumnDefinitions>
                 <Button Name="btnBackspace" 
                         Grid.Column="1" 
-                        Style="{StaticResource Operation}" 
-                        Command="{Binding BackspaceCommand}" 
-                        BorderBrush="Transparent" 
+                        Style="{StaticResource Actions}" 
+                        Command="{Binding InsertOperationCommand}"
+                        CommandParameter="{x:Static models:Operations.Backspace}"                        BorderBrush="Transparent" 
                         FontSize="15" Content="⌫"/>
             </Grid>
             <Grid Name="GridNumericArea" Row="2">
@@ -73,48 +81,51 @@
 
                 <Button Name="ButtonClean"      
                         Foreground="OrangeRed" 
-                        Style="{StaticResource Operation}" 
+                        Style="{StaticResource Actions}" 
                         Content="C" 
-                        Command="{Binding ClearCommand}"/>
-                
+                        Command="{Binding InsertOperationCommand}"
+                        CommandParameter="{x:Static models:Operations.Clear}"/>
+
                 <Button Name="ButtonAddBracket"    
                         Grid.Row="0" Grid.Column="1" 
-                        Style="{StaticResource Operation}" 
+                        Style="{StaticResource Actions}"
+                        Command="{Binding InsertOperationCommand}"
+                        CommandParameter="{x:Static models:Operations.Bracket}"
                         Content="( )" />
 
                 <Button Name="ButtonPercentage" 
                         Grid.Row="0" Grid.Column="2" 
-                        Style="{StaticResource Operation}" 
+                        Style="{StaticResource Actions}" 
+                        Command="{Binding InsertOperationCommand}"
+                        CommandParameter="{x:Static models:Operations.Percentage}"
                         Content="%" />
 
                 <Button Name="ButtonDivide"     
                         Grid.Row="0" Grid.Column="3" 
-                        Style="{StaticResource Operation}"
-                        Command="{Binding DivideCommand}" 
+                        Style="{StaticResource Actions}"
+                        
                         Content="/"/>
 
                 <Button Name="ButtonMultiply" 
                         Grid.Row="1" Grid.Column="3" 
-                        Style="{StaticResource Operation}" 
-                        Command="{Binding MultiplyCommand}" 
+                        Style="{StaticResource Actions}" 
                         Content="*" />
 
                 <Button Name="ButtonMinus" 
                         Grid.Row="2" Grid.Column="3" 
-                        Style="{StaticResource Operation}"
-                        Command="{Binding SubstructCommand}" 
+                        Style="{StaticResource Actions}"
                         Content="-"/>
 
                 <Button Name="ButtonPlus" 
                         Grid.Row="3" Grid.Column="3" 
-                        Style="{StaticResource Operation}"
-                        Command="{Binding AddCommand}" 
+                        Style="{StaticResource Actions}"
                         Content="+" />
 
                 <Button Name="ButtonResult" 
                         Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" 
-                        Style="{StaticResource Operation}" 
-                        Command="{Binding EqualCommand}" 
+                        Style="{StaticResource Actions}" 
+                        Command="{Binding InsertOperationCommand}"
+                        CommandParameter="{x:Static models:Operations.Equal}"
                         Foreground="AliceBlue" 
                         Background="LightSkyBlue"  
                         Content="=" />
@@ -130,7 +141,7 @@
                 <Button Name="Button3" Grid.Row="3" Grid.Column="2" Style="{StaticResource Digit}" Content="3" />
                 <Button Name="Button0" Grid.Row="4" Grid.Column="1" Style="{StaticResource Digit}" Content="0" />
                 <Button Name="ButtonComma"  Grid.Row="4" Grid.Column="0" Style="{StaticResource Digit}" CommandParameter="." Content="," />
-                
+
             </Grid>
 
         </Grid>
